@@ -535,10 +535,243 @@ function movingCount(threshold, rows, cols)
 题目：给定一根长为n的绳子，请把绳子剪成m段（m, n为整，且n>1, m>1），每段绳子的长度为k[0], k[1],...,k[m]，请问k[0]*k[1],...,k[m]的最大乘积是多少？当绳子的长度是8时，得到的最大乘积为18
 
 解决方案：1.采用动态规划的方式，先计算f(2)，f(3)的情况，然后计算n>4的情况。f(n)=f(i)*f(n-i)
+
+```javascript
+function cutRope(n) {
+    var hashMap = {
+        "1": 0,
+        "2": 1,
+        "3": 2
+    }
+    // 特殊输入情况
+    if (n < 1) {
+        return 0
+    }else if (n <= 3) {
+        return hashMap[n]
+    }
+    var cutMap = {
+        "0": 0,
+        "1": 1,
+        "2": 2,
+        "3": 3
+    }
+    // 对输入的数值进行分解，对于n大于等于4的情况：
+    for (let i = 4; i <= n; i ++) {
+        let maxValue = 0;
+        for( let j = 2; j < i; j ++) {
+            let curValue = cutMap[j] * cutMap[i - j];
+            if (curValue > maxValue) {
+                maxValue = curValue;
+            }
+        }
+        cutMap[i] = maxValue;
+    }
+    return cutMap[n];
+}
+```
+
 2.采用贪婪算法，当n>=5时，尽可能多剪长度为3的绳子，剩下的绳子长度为4的时候，剪为两个长度为2的绳子
+
+```javascript
+function cutRope(n) {
+    var hashMap = {
+        "0": 0,
+        "1": 0,
+        "2": 1,
+        "3": 2,
+        "4": 4
+    }
+    // 特殊情况
+    if (n < 1) {
+        return 0
+    }else if (n < 5) {
+        return hashMap[n]
+    }
+    // 大于5的情况下尽可能多取3的长度的绳子，剩下为4时，剪为两个长度为2的绳子
+    var count = 0
+    while (n > 4) {
+        n -= 3;
+        count += 1;
+    }
+    var result = 0;
+    result = Math.pow(3, count) * n
+    return result;
+}
+```
 
 #### 15. 二进制中1的个数
 
 题目：输入一个整数，输出该数二进制表示中1的个数，其中负数用补码来表示
 
-解决方案：
+解决方案：为了避免输入的数字为负数，不采用右移的方式来判决
+Way1: n与1按位与操作，判断最低位是否为1
+
+```javascript
+function NumberOf1(n) {
+    // >>>表示不带符号向右移动二进制数，移动后前面统统补0；
+    if (n < 0) {
+        n = n >>> 0;
+    }
+
+    return testNum(n)
+
+    function testNum(n) {
+        var count = 0;
+        var andSig = 1;
+        strN = n.toString(2);
+        for (var i = 0; i < strN.length; i ++) {
+            let flag = n & andSig;
+            if (flag != 0) {
+                count ++;
+            }
+            andSig = andSig << 1;
+        }
+        return count
+    }
+}
+```
+Way2: 利用位运算的特性，用n与n-1按位与运算，如果有多少个1，则可以进行多少次这种运算
+
+```javascript
+function NumberOf1(n) {
+    if (n < 0) {
+        n = n >>> 0;
+    }
+    var count = 0;
+    while (n) {
+        n = n & (n - 1);
+        count ++;
+    }
+    return count
+}
+```
+
+#### 16. 数值的整数次方
+
+题目： 给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。
+
+解决方案：该问题需要考虑以下问题：
+（1）底数为0情况，返回值都为0
+（2）指数为0的话，返回为1
+（3）指数为负数的话，应该是倒数的情况
+
+```javascript
+function Power(base, exponent)
+{
+    // 特殊情况1，底数为0
+    if (base == 0) {
+        return 0
+    }
+    // 特殊情况2，指数为0
+    if (exponent == 0) {
+        return 1
+    }
+    // 特殊情况3，指数为负数
+    if (exponent < 0) {
+        let result = caculateExp(base, Math.abs(exponent));
+        result = 1 / result;
+        return result
+    }
+    return caculateExp(base, exponent)
+
+    function caculateExp(base, exp) {
+        let result = 1;
+        for (let i = 0; i < exp; i ++) {
+            result = result * base
+        }
+        return result
+    }
+}
+```
+
+```javascript
+function Power(base, exponent){
+    return Math.pow(base, exponent);
+}
+```
+
+#### 17. 打印从1到最大的n位数
+
+题目：输入数字n，按顺序打印出从1到最大的n位十进制数，比如输入3，则打印输出1，2，3一直到最大的3位数999
+
+解决方案：在其他的编程语言中，需要注意大数的情况，但是对于js，其数据格式相对统一，只需要找到那个最大数，然后顺序打印即可
+
+```javascript
+function PrintNNumbers(n)
+{
+    var maxNumber = 0
+    for (let i = 0; i < n; i ++) {
+        maxNumber += 9 * Math.pow(10, i)
+    }
+    for (let i = 1; i <= maxNumber; i ++) {
+        console.log(i)
+    }
+    return maxNumber
+}
+```
+
+#### 18. 矩形覆盖问题
+
+题目：我们可以用2\*1的小矩形横着或者竖着去覆盖更大的矩形。请问用n个2\*1的小矩形无重叠地覆盖一个2*n的大矩形，总共有多少种方法？
+
+解决思路：首先该问题为分类讨论问题
+（1）矩形如果竖着放进去，那么剩下的放置方法为f(n-1)
+（2）矩形如果横着放进去，那么剩下的放置方法为f(n-2)
+=>也就是斐波那契数列问题
+
+Way1. 采用hashMap方法
+```javascript
+function rectCover(number)
+{
+    // write code here
+    var hashMap = {
+        "1": 1,
+        "2": 2,
+    };
+    if (number <= 0) {
+        return 0
+    }
+    if (number >= 3) {
+        for (let i = 3; i <= number; i ++) {
+            hashMap[i] = hashMap[i - 1] + hashMap[i - 2];
+        }
+    }
+    return hashMap[number]
+}
+```
+
+Way2. 变量的解构赋值
+```javascript
+function rectCover(number)
+{
+    if (number == 0) {
+        return 0
+    }else if (number == 1) {
+        return 1
+    }else if (number == 2) {
+        return 2
+    }
+    var [a, b, i] = [1, 2, 3];
+    while (i <= number) {
+        [b, a] = [a + b, b];
+        i ++;
+    }
+    return b
+}
+```
+
+#### 19. 删除链表中的节点
+
+题目：在O(1)时间内删除链表节点。给定单向链表的头指针和一个节点指针，定义一个函数在O(1)时间内删除该节点。链表节点与函数的定义已给出
+
+解决方案：为了避免遍历所有节点，则先找到这个节点，然后将下一个节点的值复制到这个节点上，然后删除下一个节点，并改变该节点的指向。
+
+```javascript
+
+```
+
+#### 20. 删除链表中的重复元素
+
+题目：在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+
+解决方案：已知这个链表是排序的，那么就相邻的节点之间的比较
