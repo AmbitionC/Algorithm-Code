@@ -760,18 +760,314 @@ function rectCover(number)
 }
 ```
 
-#### 19. 删除链表中的节点
+#### 19*. 删除链表中的节点
 
 题目：在O(1)时间内删除链表节点。给定单向链表的头指针和一个节点指针，定义一个函数在O(1)时间内删除该节点。链表节点与函数的定义已给出
 
 解决方案：为了避免遍历所有节点，则先找到这个节点，然后将下一个节点的值复制到这个节点上，然后删除下一个节点，并改变该节点的指向。
 
 ```javascript
+function ListNode(x){
+    this.val = x;
+    this.next = null;
+}
+
+function deleteNode(pHead, pNode)
+{
+    // 错误输入的情况下
+    if (!pHead || !pNode) {
+        return null;
+    }
+    // 删除的不是尾节点
+    if (pNode.next !== null) {
+        // 将下一个节点的值都赋到pNode上
+        let pNext = pNode.next;
+        pNode.val = pNext.val;
+        pNode.next = pNext.next;
+        // 删除pNext
+        pNext = null
+    }
+    else if(pHead == pNode){
+        // 链表只有一个节点，且就是要删除的节点
+        pNode = null;
+        pHead = null;
+    }
+    else {
+        // 链表不止一个节点，要删除的节点就是最后一个节点，则需要遍历链表直到倒数第二个节点
+        var tempNode = pHead;
+        while (tempNode.next != pNode) {
+            tempNode = tempNode.next
+        }
+        tempNode.next = null;
+        pNode = null;
+    }
+    
+}
 
 ```
 
-#### 20. 删除链表中的重复元素
+#### 20*. 删除链表中的重复元素
 
 题目：在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
 
 解决方案：已知这个链表是排序的，那么就相邻的节点之间的比较
+
+```javascript
+function ListNode(x){
+    this.val = x;
+    this.next = null;
+}
+
+function deleteDuplication(pHead)
+{
+    // write code here
+    // 遍历整个链表
+    if (!pHead) {
+        return null;
+    }
+
+    // 初始化三个指针
+    var tempHead = new ListNode(-1);
+    tempHead.next = pHead
+    var preNode = tempHead;
+    var curr1 = preNode.next;
+    var curr2 = curr1.next;
+
+    while(curr1) {
+        if (!curr2 || curr2.val !== curr1.val) {
+            // curr2与curr1不等的情况，或者curr2值为null的情况
+            if (curr1.next !== curr2) {
+                // 如果curr1的下一个节点不是curr2时
+                clear(curr1, curr2);
+                preNode.next = curr2;
+            } else {
+                preNode = curr1;
+            }
+            curr1 = curr2;
+            if (curr2) {
+                curr2 = curr2.next;
+            }
+        } else {
+            if (curr2){
+                curr2 = curr2.next;
+            }
+        }
+    }
+    return tempHead.next;
+
+    function clear(node, stop) {
+        var temp;
+        while (node !== stop) {
+            temp = node.next;
+            node.next = null;
+            node = temp;
+        }
+    }
+}
+```
+
+#### 21. 正则表达式匹配
+
+题目：请实现一个函数用来匹配包括'.'和'\*'的正则表达式。模式中的字符'.'表示任意一个字符，而'\*'表示它前面的字符可以出现任意次（包含0次）。 在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"和"ab\*ac\*a"匹配，但是与"aa.a"和"ab\*a"均不匹配
+
+解决方案：
+（其他语言）首先需要分类讨论：
+
+1. 如果pattern的下一个字符不是“*”的时候，则如果str与patten字符匹配，则都向后移动一个字符。如不匹配则返回一个false
+
+2. 如果pattern的下一个字符为“*”的时候，则有不同的匹配方式：
+
+（1）pattern向后移动两个字符，因为“\*”和其前面的字符被忽略，因为“\*”可以匹配字符串中0个字符
+
+（2）如果pattern和当前str的字符相匹配，那么str向后移动1个字符。那么也有两种相应的情况：
+
+- 在pattern上向后移动两个字符
+
+- 保持原有的模式不变
+
+
+（JS）直接使用JS中的正则的语法即可实现
+
+```javascript
+function match(s, pattern) {
+    if (s === "" && pattern === "") {
+        // 输入都为空的情况
+        return true
+    }
+    if (!pattern || pattern.length === 0) {
+        return false
+    }
+    var reg = new RegExp("^" + pattern + "$")
+    return reg.test(s)
+}
+```
+
+#### 22. 表示数值的字符串
+
+题目：请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。例如，字符串"+100","5e2","-123","3.1416"和"-1E-16"都表示数值。 但是"12e","1a3.14","1.2.3","+-5"和"12e+4.3"都不是。
+
+解决方案：使用JS中的Number方法可以直接使用Number的方法
+
+```javascript
+function isNumeric(s) {
+    return Number(s)
+}
+```
+
+#### 23. 调整数组顺序使奇数位于偶数前面
+
+题目：输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
+
+解决方案：（不要求相对位置不变的情况）定义两个指针，一个指向开头一个指向尾部，如果第一个指针为偶数且第二个指针为奇数时，交换两个数字
+
+如果要求两者相对位置不变，则需要两个辅助数组，一个放奇数一个放偶数，然后进行合并
+
+```javascript
+function reOrderArray(array) {
+    var oddArray = [];
+    var evenArray = [];
+    for (let i = 0; i < array.length; i ++) {
+        if (array[i] % 2 == 1) {
+            oddArray.push(array[i])
+        }else {
+            evenArray.push(array[i])
+        }
+    }
+    return oddArray.concat(evenArray)
+}
+```
+
+#### 24. 链表中倒数第k个节点
+
+题目：输入一个链表，输出链表中倒数第k个节点
+
+解决方案：为了防止两遍遍历链表，要找到倒数第k个点，也就是正数第list.length - k 的节点
+
+```javascript
+function FindKthToTail(head, k)
+{
+    // 计算整个链表的长度
+    let tempNode = head;
+    let count = 0;
+    while (tempNode) {
+        count ++;
+        tempNode = tempNode.next
+    }
+    let number = count - k;
+    // 排除特殊情况
+    if (number < 0) {
+        return null
+    }
+    // 找到倒数第k个点
+    let cacheNode = head;
+    while (number > 0) {
+        cacheNode = cacheNode.next;
+        number --;
+    }
+    return cacheNode
+}
+```
+
+#### 25. 链表中环的入口节点
+
+题目：给一个链表，若其中包含环，请找出该链表的环的入口结点，否则，输出null。
+
+解决方案：解决链表中环的入口节点问题，主要分为以下三个步骤：
+
+（1）判断链表有没有环（通过一前一后两个指针是否相遇来解决）
+
+（2）计算环的长度（两个指针相遇在环中，则从该节点开始，通过计数得到环的长度）
+
+（3）通过环的长度，通过两个指针来实现环的入口点确定。
+
+```javascript
+/*function ListNode(x){
+    this.val = x;
+    this.next = null;
+}*/
+function EntryNodeOfLoop(pHead)
+{
+    // write code here
+    let loopResult = haveLoop(pHead);
+    if (!loopResult){
+        return null
+    }else {
+        let loopLength = loopNum(loopResult);
+        let theEnterNode = enterNode(loopLength, pHead);
+        return theEnterNode
+    }
+    
+    function haveLoop(pHead){
+        // Step1: 确定有没有环
+        let curr1 = pHead;
+        let curr2 = pHead;
+        while (curr1.next) {
+            curr1 = curr1.next;
+            curr2 = curr2.next.next;
+            if (curr1 === curr2){
+                return curr1
+            }
+        }
+        return false
+    }
+    
+    function loopNum(meetNode) {
+        // Step2: 计算环的长度
+        let curr1 = meetNode;
+        let curr2 = meetNode.next;
+        let count = 1;
+        while (curr1 !== curr2) {
+            count ++;
+            curr2 = curr2.next;
+        }
+        return count
+    }
+    
+    function enterNode(loopLen, pHead) {
+        let curr1 = pHead;
+        let curr2 = pHead;
+        for (let i = 0; i < loopLen; i ++) {
+            curr2 = curr2.next
+        }
+        while (curr1.next) {
+            if (curr1 === curr2) {
+                return curr1
+            }
+            curr1 = curr1.next;
+            curr2 = curr2.next;
+        }
+    }
+}
+```
+
+#### 26. 反转链表
+
+题目：输入一个链表，反转链表后，输出新链表的表头。
+
+解决方案：反转链表需要保存三个状态，前一个节点，当前节点，以及下一个节点。这样是为了防止造成断裂。
+
+```javascript
+/*function ListNode(x){
+    this.val = x;
+    this.next = null;
+}*/
+function ReverseList(pHead)
+{
+    // write code here
+    // 特殊情况，如果输入为空的情况
+    if (!pHead) {
+        return null
+    }
+    // 遍历链表
+    let curNode = pHead;
+    let preNode = null;
+    while(curNode.next) {
+        let nextNode = curNode.next;
+        curNode.next = preNode;
+        preNode = curNode;
+        curNode = nextNode;
+    }
+    curNode.next = preNode;
+    return curNode
+}
+```
