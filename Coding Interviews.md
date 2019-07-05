@@ -1071,3 +1071,387 @@ function ReverseList(pHead)
     return curNode
 }
 ```
+
+#### 27. 合并两个排序的链表
+
+题目： 输入两个单调递增的链表，输出两个链表合成后的链表，当然我们需要合成后的链表满足单调不减规则。
+
+解决方案：从链表的头部开始进行比较，如果数值小，则先放入新的链表中
+
+```javascript
+/*function ListNode(x){
+    this.val = x;
+    this.next = null;
+}*/
+function Merge(pHead1, pHead2)
+{
+    // write code here
+    // 排除特殊情况
+    if (!pHead1) {
+        return pHead2 ? pHead2 : null
+    }else if (!pHead2) {
+        return pHead1
+    }
+    
+    // 比较每个链表的表头元素
+    let curr1 = pHead1;
+    let curr2 = pHead2;
+    let result = new ListNode(-1);
+    let curr = result;
+    while (curr1 && curr2) {
+        if (curr1.val < curr2.val) {
+            curr.next = curr1;
+            curr1 = curr1.next;
+        } else {
+            curr.next = curr2;
+            curr2 = curr2.next;
+        }
+        curr = curr.next
+    }
+    if (curr1) {
+        curr.next = curr1
+    }
+    if (curr2) {
+        curr.next = curr2
+    }
+    
+    curr = result.next;
+    result.next = null;
+    result = curr;
+    // 防止内存泄漏
+    curr = curr1 = curr2 = null;
+    return result
+}
+```
+
+#### 28. 树的子结构
+
+题目：输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）
+
+解决方案：主要分为两个步骤
+
+（1）首先在树A中找到与B根节点相同的那个节点（采用递归的方式）
+
+（2）判断该节点下面的树的结构是否相同
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function HasSubtree(pRoot1, pRoot2)
+{
+    // write code here
+    if (pRoot1 == null || pRoot2 == null) {
+        return false
+    }
+    
+    if (isTree1HasTree2(pRoot1, pRoot2)) {
+        return true
+    }else {
+        return HasSubtree(pRoot1.left, pRoot2) || HasSubtree(pRoot1.right, pRoot2)
+    }
+    
+    
+    function isTree1HasTree2(pRoot1, pRoot2) {
+        if (pRoot2 == null) {
+            return true
+        }
+        if (pRoot1 == null) {
+            return false
+        }
+        if (pRoot1.val !== pRoot2.val) {
+            return false
+        }
+        if (pRoot1.val == pRoot2.val) {
+            return isTree1HasTree2(pRoot1.left, pRoot2.left) && isTree1HasTree2(pRoot1.right, pRoot2.right)
+        }
+    }
+}
+```
+
+#### 29. 二叉树的镜像
+
+题目：操作给定的二叉树，将其变换为源二叉树的镜像。
+
+解决方案：遍历树的所有节点，如果该节点有子节点，就交换其子节点，当交换完所有非叶节点的左右子节点之后就得到其镜像。
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function Mirror(root)
+{
+    // write code here
+    if (root == null) {
+        return null
+    }
+    let temp = root.left;
+    root.left = root.right;
+    root.right = temp;
+    if (root.left){
+        Mirror(root.left)
+    };
+    if (root.right) {
+        Mirror(root.right)
+    }
+}
+```
+
+#### 30. 对称的二叉树
+
+题目：请实现一个函数，用来判断一颗二叉树是不是对称的。注意，如果一个二叉树同此二叉树的镜像是同样的，定义其为对称的。
+
+解决方案：在二叉树的镜像上基础上进行修改与判定即可
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function isSymmetrical(pRoot)
+{
+    // write code here
+    if (!pRoot) {
+        return true
+    }
+    
+    return nodeSymmetrical(pRoot, pRoot)
+    
+    function nodeSymmetrical(node1, node2) {
+        if (!node1 && !node2) {
+            return true
+        }
+        if (!node1 || !node2) {
+            return false
+        }
+        if (node1.val != node2.val) {
+            return false
+        }
+        return nodeSymmetrical(node1.left, node2.right) && nodeSymmetrical(node1.right, node2.left)
+    }
+}
+```
+
+#### 31. 顺时针打印矩阵
+
+题目：输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，例如，如果输入如下4 X 4矩阵： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 则依次打印出数字1,2,3,4,8,12,16,15,14,13,9,5,6,7,11,10.
+
+解决方法：借助布尔值矩阵实现
+
+```javascript
+function printMatrix(matrix)
+{
+    // write code here
+    let result = [];
+    let rows = matrix.length;
+    let cols = matrix[0].length;
+    let hashMap = [];
+    for (let i = 0; i < rows; i ++) {
+        let hashPiece = [];
+        for (let j = 0; j < cols; j ++) {
+            hashPiece.push(false)
+        }
+        hashMap.push(hashPiece)
+    }
+    if (cols == 1 || rows == 1) {
+        for (let i = 0; i < rows; i ++) {
+            for (let j = 0; j < cols; j ++) {
+                result.push(matrix[i][j])
+            }
+        }
+    }
+    var startX = 0;
+    var startY = 0;
+    while (result.length != cols * rows) {
+        // 打印周期第一次
+        for (let i = 0; i < cols; i ++) {
+            if (!hashMap[startX][i]) {
+                result.push(matrix[startX][i]);
+                hashMap[startX][i] = true;
+                startY = i;
+            }
+        }
+        startX ++;
+        // 打印周期第二次
+        for (let i = 0; i < rows; i ++) {
+            if (!hashMap[i][startY]) {
+                result.push(matrix[i][startY]);
+                hashMap[i][startY] = true;
+                startX = i;
+            }
+        }
+        startY --;
+        // 打印周期第三次
+        for (let i = 0; i < cols; i ++) {
+            if (!hashMap[startX][cols-i-1]) {
+                result.push(matrix[startX][cols-i-1]);
+                hashMap[startX][cols-i-1] = true;
+                startY = cols-i-1;
+            }
+        }
+        startX --;
+        // 打印周期第四次
+        for (let i = 0; i < rows; i++) {
+            if (!hashMap[rows-i-1][startY]) {
+                result.push(matrix[rows-i-1][startY]);
+                hashMap[rows-i-1][startY] = true;
+                startX = rows-i-1;
+            }
+        }
+        startY ++;
+    }
+    return result
+}
+```
+
+#### 32. 包含min函数的栈
+
+题目：定义栈的数据结构，请在该类型中实现一个能够得到栈中所含最小元素的min函数（时间复杂度应为O（1））。
+
+```javascript
+var stack = [];
+function push(node){
+    stack.push(node);
+}
+function pop(){
+    return stack.pop();
+}
+function top(){
+    return stack[stack.length - 1];
+}
+function min(){
+    return Math.min.apply(null, stack);
+}
+```
+
+#### 33. 栈的压入、弹出序列
+
+题目：输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否可能为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，序列4,5,3,2,1是该压栈序列对应的一个弹出序列，但4,3,5,1,2就不可能是该压栈序列的弹出序列。（注意：这两个序列的长度是相等的）
+
+解决方法：规律如下
+（1）如果下一个要弹出的数字刚好是栈顶数字，那么就直接弹出
+
+（2）如果下一个要弹出的数字不在栈顶，则把压栈序列中还没有入栈的数字压入辅助栈，直到把下一个要弹出的数字压入栈顶为止
+
+（3）如果所有数字都压入栈后，仍然没有找到下一个弹出数字，则返回false
+
+```javascript
+function IsPopOrder(pushV, popV)
+{
+    if (!pushV.length || !popV.length) {
+        return false
+    }
+    let tempStack = [];
+    let popIndex = 0;
+    for (let i = 0; i < pushV.length;) {
+        if (tempStack != [] && tempStack[tempStack.length - 1] == popV[popIndex]){
+            popIndex ++;
+            tempStack.pop();
+        }else {
+            tempStack.push(pushV[i]);
+            i ++;
+        }
+    }
+    while (popIndex <= popV.length && tempStack[tempStack.length - 1] == popV[popIndex]) {
+        popIndex ++;
+        tempStack.pop();
+    }
+    if (popIndex - 1 == popV.length) {
+        return true
+    }
+    return false
+}
+```
+
+#### 34. 从上到下打印二叉树
+
+题目：从上往下打印出二叉树的每个节点，同层节点从左至右打印。
+
+解决方法：引入一个队列，存放每一个节点的左右子节点，按照先进先出的原则来进行遍历
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function PrintFromTopToBottom(root)
+{
+    // write code here
+    var result = [];
+    var queue = [];
+    if (root == null) {
+        return result
+    }
+    queue.push(root);
+    while (queue[0] != null) {
+        let tempNode = queue.shift()
+        result.push(tempNode.val);
+        if (tempNode.left) {
+            queue.push(tempNode.left)
+        }
+        if (tempNode.right) {
+            queue.push(tempNode.right)
+        }
+    }
+    return result
+}
+```
+
+#### 35. 二叉搜索树的后序遍历序列
+
+题目：输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则输出Yes,否则输出No。假设输入的数组的任意两个数字都互不相同。
+
+解决方法：二叉搜索树的后序遍历的规律
+
+（1）左子树节点的值，都比根节点的值小；
+
+（2）右子树节点的值，都比根节点的值大。
+
+```javascript
+function VerifySquenceOfBST(sequence)
+{
+    // write code here
+    let seqLength = sequence.length;
+    if (seqLength == 0) {
+        return false
+    }
+    let root = sequence[seqLength - 1];
+    let leftTree = [];
+    let rightTree = [];
+    for (let i = 0; i < seqLength - 1; i ++) {
+        if (sequence[i] > root) {
+            leftTree = sequence.slice(0, i);
+            rightTree = sequence.slice(i, seqLength - 1);
+            break
+        }
+    }
+    if (leftTree.length == 0 && rightTree.length == 0) {
+        return true
+    }
+    if (leftTree.length > 0) {
+        for (let i = 0; i < leftTree.length; i ++) {
+            if (leftTree[i] >= root){
+                return false
+            }
+        }
+    }
+    if (rightTree.length > 0) {
+        for (let i = 0; i < rightTree.length; i ++) {
+            if (rightTree[i] <= root){
+                return false
+            }
+        }
+    }
+    return VerifySquenceOfBST(leftTree) || VerifySquenceOfBST(rightTree)
+}
+```
+
+#### 36. 二叉树中和为某一值的路径
+
+题目：输入一颗二叉树的跟节点和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。(注意: 在返回值的list中，数组长度大的数组靠前)
