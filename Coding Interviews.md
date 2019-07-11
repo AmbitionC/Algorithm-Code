@@ -1452,6 +1452,214 @@ function VerifySquenceOfBST(sequence)
 }
 ```
 
-#### 36. 二叉树中和为某一值的路径
+#### 36*. 二叉树中和为某一值的路径
 
 题目：输入一颗二叉树的跟节点和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。(注意: 在返回值的list中，数组长度大的数组靠前)
+
+解决方法：采用深度优先搜索(dfs)方法来遍历树的结构
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function FindPath(root, expectNumber)
+{
+    // write code here
+    //采用深度遍历的方式实现
+    var result = [];
+    var temp = [];
+    dfs(root, 0);
+    return result
+    
+    function dfs(root, sum) {
+        if (!root) {
+            return;
+        }
+        temp.push(root.val);
+        sum += root.val;
+        if (!root.left && !root.right && sum === expectNumber) {
+            result.push(temp.concat());
+        }
+        if (root.left) {
+            dfs(root.left, sum);
+        }
+        if (root.right) {
+            dfs(root.right, sum)
+        }
+        temp.pop();
+    }
+}
+```
+
+#### 37*. 复杂链表的复制
+
+题目：输入一个复杂链表（每个节点中有节点值，以及两个指针，一个指向下一个节点，另一个特殊指针指向任意一个节点），返回结果为复制后复杂链表的head。（注意，输出结果中请不要返回参数中的节点引用，否则判题程序会直接返回空）
+
+解决方法：
+
+1. 采用传统的方式，分为以下步骤
+
+（1）复制原有链表上的节点N，创建复制的节点N'，并将复制出来的节点N'用pNext连接起来
+
+（2）创建配对信息< N, N' >, 并放入哈希表
+
+（3）复制每一个节点的pRandom
+
+2. 采用递归的方式实现链表的复制
+
+```javascript
+/*function RandomListNode(x){
+    this.label = x;
+    this.next = null;
+    this.random = null;
+}*/
+function Clone(pHead)
+{
+    // write code here
+    if (!pHead) {
+        return null
+    }
+    var resultHead = new RandomListNode(pHead.label);
+    resultHead.random = pHead.random;
+    resultHead.next = Clone(pHead.next);
+    return resultHead
+}
+```
+
+#### 38. 二叉搜索树与双向链表
+
+题目：输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
+
+解决方案：首先需要找到整个树的最后一个节点，同时对于子树也需要找到最后一个节点，并连接起来，形成一个双向链表。最后再指向双向链表的第一个节点即可
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function Convert(pRootOfTree)
+{
+    // write code here
+    // 找到最后一个节点
+    var lastNode = ConvertNode(pRootOfTree);
+    var pHead = lastNode;
+    while(pHead && pHead.left) {
+        pHead = pHead.left
+    }
+    return pHead
+    
+    function ConvertNode(node) {
+        if (!node) {
+            return ;
+        }
+        if (node.left) {
+            lastNode = ConvertNode(node.left);
+        }
+        node.left = lastNode;
+        if (lastNode) {
+            lastNode.right = node;
+        }
+        lastNode = node;
+        if (node.right) {
+            lastNode = ConvertNode(node.right);
+        }
+        return lastNode
+    }
+}
+```
+
+#### 39*. 序列化二叉树
+
+题目：请实现两个函数，分别用来序列化和反序列化二叉树
+
+解决方案：序列化与反序列化的步骤如下
+
+1. 采用前序遍历的方式实现序列化二叉树
+
+2. 采用递归的方式从左到右，将序列转化为二叉树
+
+```javascript
+/*function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+}*/
+
+function Serialize(pRoot)
+{
+    // 采用前序遍历的方式实现序列化二叉树
+    var sequence = [];
+    ser(pRoot);
+    // 将数组形式的sequence转变为序列
+    
+    return sequence;
+    
+    function ser(node) {
+        if (!node){
+            sequence.push('#')
+            return ;
+        }
+        sequence.push(node.val);
+        ser(node.left);
+        ser(node.right);
+    }
+}
+
+function Deserialize(str)
+{
+    // 将前序遍历的数组调整为序列化二叉树
+    // 首先将输入进来的字符串转变为数组
+    let pRoot = null;
+    let temp = str.shift();
+    if (temp !== '#') {
+        pRoot = new TreeNode(temp);
+    } else {
+        return pRoot;
+    }
+    pRoot.left = Deserialize(str);
+    pRoot.right = Deserialize(str);
+    return pRoot
+    
+}
+```
+
+#### 40. 字符串的排列
+
+题目：输入一个字符串,按字典序打印出该字符串中字符的所有排列。例如输入字符串abc,则打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
+
+解决方案：首先确定第一个字符，然后列举剩下的所有的字符的排列顺序
+
+```javascript
+function Permutation(str)
+{
+    // write code here
+    var result = [];
+    if (str.length === 0) {
+        return result;
+    }
+    str = str.split("").sort();
+    var resultPiece = "";
+    permutate(str, resultPiece, result);
+    return result;
+
+    function permutate(strLeft, resultPiece, result) {
+        if (strLeft.length === 0) {
+            result.push(resultPiece)
+        }
+        for (let i = 0; i < strLeft.length; i ++) {
+            // 排除重复数字的情况
+            if (strLeft[i] === strLeft[i + 1]) {
+                continue;
+            }
+            let c = strLeft.splice(i , 1)[0];
+            permutate(strLeft, resultPiece+c, result);
+            // 下一次循环前还原数组
+            strLeft.splice(i, 0, c);
+        }
+    }
+}
+```
+
