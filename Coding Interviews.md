@@ -1663,3 +1663,1317 @@ function Permutation(str)
 }
 ```
 
+#### 41. 数组中出现次数超过一半的数字
+
+题目：数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出2。如果不存在则输出0。
+
+解决方案：本题采用hashMap来实现，只需要遍历一次数组，即可实现。时间复杂度为O(n)
+
+```javascript
+function MoreThanHalfNum_Solution(numbers)
+{
+    // write code here
+    // 构建Hash表
+    var hashMap = {};
+    var length = numbers.length;
+    var halfLength = Math.floor(length / 2);
+    if (length === 0) {
+        return 0
+    }
+    for (let i = 0; i <= length; i ++) {
+        if (!hashMap[numbers[i]]) {
+            hashMap[numbers[i]] = 1;
+        }else {
+            hashMap[numbers[i]] += 1;
+        }
+        if (hashMap[numbers[i]] > halfLength) {
+            return numbers[i]
+        }
+    }
+    return 0
+}
+```
+
+#### 42. 最小k个数
+
+题目：输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4。
+
+解决方案：使用JS中的min函数实现最小的数并放入result，改变数组，进行循环即可
+
+```javascript
+function GetLeastNumbers_Solution(input, k)
+{
+    // write code here
+    var result = [];
+    if (input.length === 0) {
+        return result
+    }
+    if (input.length < k) {
+        return result
+    }
+    for (let i = 0; i < k; i ++) {
+        let temp = Math.min.apply(null, input);
+        result.push(temp);
+        input.splice(input.indexOf(temp), 1);
+    }
+    return result
+}
+```
+
+#### 43. 数据流中的中位数
+
+题目：如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。我们使用Insert()方法读取数据流，使用GetMedian()方法获取当前读取数据的中位数。
+
+解决方案：直接实现即可，对于数组的排序sort()，需要注意其用法
+
+```javascript
+var sortedArray = []
+function Insert(num)
+{
+    // write code here
+    sortedArray.push(num);
+    sortedArray.sort((a, b) => a - b);
+    return sortedArray
+}
+function GetMedian(){
+	// write code here
+    // 判断数组的长度为奇数还是偶数
+    midNum = Math.floor(sortedArray.length / 2);
+    if (sortedArray.length & 1) {
+        // 为奇数的情况
+        return sortedArray[midNum]
+    }else {
+        // 偶数的情况
+        return (sortedArray[midNum] + sortedArray[midNum - 1]) / 2
+    }
+}
+```
+
+#### 44. 连续子数组的最大和
+
+题目：
+HZ偶尔会拿些专业问题来忽悠那些非计算机专业的同学。今天测试组开完会后,他又发话了:在古老的一维模式识别中,常常需要计算连续子向量的最大和,当向量全为正数的时候,问题很好解决。但是,如果向量中包含负数,是否应该包含某个负数,并期望旁边的正数会弥补它呢？例如:{6,-3,-2,7,-15,1,2,2},连续子向量的最大和为8(从第0个开始,到第3个为止)。给一个数组，返回它的最大连续子序列的和，你会不会被他忽悠住？(子向量的长度至少是1)
+
+解决方案：从第一位开始，进行叠加，如果出现小于0的情况，则从下一位开始。属于采用动态规划的方法。
+
+```javascript
+function FindGreatestSumOfSubArray(array)
+{
+    // write code here
+    if (array.length === 0) {
+        return null
+    }
+    var sum = array[0];
+    var tempSum = array[0];
+    for (let i = 1; i < array.length; i ++) {
+        tempSum = tempSum > 0 ? array[i] + tempSum : array[i];
+        sum = tempSum > sum ? tempSum : sum;
+    }
+    return sum
+}
+```
+
+#### 45. 1～n整数中1出现的次数
+
+题目：求出1\~13的整数中1出现的次数,并算出100\~1300的整数中1出现的次数？为此他特别数了一下1~13中包含1的数字有1、10、11、12、13因此共出现6次,但是对于后面问题他就没辙了。ACMer希望你们帮帮他,并把问题更加普遍化,可以很快的求出任意非负整数区间中1出现的次数（从1 到 n 中1出现的次数）。
+
+```javascript
+function NumberOf1Between1AndN_Solution(n)
+{
+    // write code here
+    var count = 0;
+    for (let i = 1; i <= n; i ++) {
+        numberOf1(i)
+    }
+    return count
+    // 计算单个数字的1出现次数
+    function numberOf1(num) {
+        while (num) {
+            if (num % 10 === 1) {
+                count ++;
+            }
+            num = Math.floor(num / 10);
+        }
+    }
+}
+```
+
+```javascript
+// 采用正则的方式匹配
+function NumberOf1Between1AndN_Solution(n)
+{
+    if (n < 0) return 0;
+    var ones = 0;
+    var arr = [];
+    while(n){
+        arr.push(n);
+        n--;
+    }
+    return arr.join('').replace(/[^1]+/g,'').length;
+}
+```
+
+#### 46. 把数组排成最小的数
+
+题目：输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
+
+解决思路：比较两个数的大小，然后进行排序
+
+```javascript
+function PrintMinNumber(numbers)
+{
+    // write code here
+    // 对数组进行排序
+    var sortedArr = [];
+    sortedArr.push(numbers[0]);
+    for (let i = 1; i < numbers.length; i ++) {
+        for (let j = 0; j < sortedArr.length; j ++) {
+            let comResult = compareNums(numbers[i], sortedArr[j]);
+            if (!comResult) {
+                sortedArr.splice(j, 0, numbers[i])
+                break;
+            }
+        }
+        let lastResult = compareNums(numbers[i], sortedArr[sortedArr.length - 1]);
+        if (lastResult) {
+            sortedArr.push(numbers[i])
+        }
+    }
+
+    // 将排序后的数组形成最小数
+    let result = sortedArr.join('')
+    return result
+
+    // 比较两个数的大小
+    function compareNums(a, b) {
+        let strA = a.toString() + b.toString();
+        let strB = b.toString() + a.toString();
+        return parseInt(strA) >= parseInt(strB) ? true : false
+    }
+}
+```
+
+#### 47. 把数字翻译成字符串
+
+题目：给定一个数字，我们按照如下规则将其翻译为字符串：0翻译成“a”, 1翻译成“b”,..., 11翻译成“l”,..., 25翻译成“z”。一个数字可能有多个翻译。例如，12258有5种不同的翻译，分别是“bccfi”、“bwfi”、“bczi”、“mcfi”和“mzi”。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
+
+解决思路：从右边到左边，采用递归的方式得到结果
+
+```javascript
+var transferMap = {
+    "0": "a", "1": "b", "2": "c", "3": "d", "4": "e", "5": "f", "6": "g", "7": "h", "8": "i", "9": "j", "10": "k", "11": "l", "12": "m", "13": "n", "14": "o", "15": "p", "16": "q", "17": "r", "18": "s", "19": "t", "20": "u", "21": "v", "22": "w", "23": "x", "24": "y", "25": "z"
+}
+var count = 0
+
+function transferNumToStr(number) {
+
+    if (number === 0) {
+        count ++;
+        return;
+    }
+
+    combineStr(number);
+
+    function combineStr(num) {
+        // 末位数为单个位数
+        lastNum = num % 10;
+        restNums = Math.floor(num / 10);
+        transferNumToStr(restNums);
+
+        // 末位数为两位数的情况
+        lastNum = num % 100;
+        if (lastNum >= 26 || (num / 10) < 1) {
+            return;
+        }else {
+            restNums = Math.floor(num / 100);
+            transferNumToStr(restNums)
+        }
+    }
+}
+
+transferNumToStr(1225);
+console.log(count)
+```
+
+#### 48. 礼物的最大价值
+
+题目：在一个m*n的棋盘，每一格都放有一个礼物，每个礼物都有一定的价值（价值大于0）。你可以从棋盘的左上角开始拿格子里的礼物，并每次向右或者向下移动一格。直到拿到棋盘的右下角。给定一个棋盘及上面的礼物，请计算你最多能拿到多少价值的礼物？
+
+解决方案：采用动态规划的方法实现，递归的公式表达如下：
+
+```
+f(i, j) = max(f(i-1, j), f(i, j-1)) + gift[i, j]
+```
+
+#### 49*. 最长不含重复字符的子字符串
+
+题目：请从字符串中找出一个最长的不包含重复字符的子字符串，计算该最长子字符串的长度。假设字符串中只包含'a'~'z'的字符。例如在字符串"arabcacfr"中，最长的不含重复字符的子字符串是"acfr"，长度为4。
+
+解决方案：Way1. 采用从头到尾遍历的方式实现，时间复杂度为O(n^2)
+
+```js
+function noDuplicateStr(str) {
+    let hashMap = {};
+    let maxResult = [];
+    for (let i = 0; i < str.length; i ++) {
+        resCache = [];
+        for (let j = i; j < str.length; j ++) {
+            if (hashMap[str[j]] === 1) {
+                if (resCache.length >= maxResult.length) {
+                    maxResult = resCache;
+                }
+            }else {
+                hashMap[str[j]] = 1;
+                resCache.push(str[j])
+            }
+        }
+
+        hashMap[str[i]] = 1;
+    }
+    return maxResult
+}
+
+var testStr = "arabcacfr"
+noDuplicateStr(testStr);
+```
+
+Way2. 采用动态规划的方式实现
+
+#### 50. 丑数
+
+题目：把只包含质因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
+
+解决方案：Way1. 通过逐一判断的方式实现
+
+```js
+function GetUglyNumber_Solution(index)
+{
+    // write code here
+    if (index <= 0) {
+        return 0;
+    }
+    let [count, number] = [0, 0]
+    while (count <= index) {
+        number ++;
+        if (isUgly(number)) {
+            count ++;
+        }
+    }
+    return number
+
+    function isUgly(number) {
+        while (number % 2 == 0) {
+            number /= 2;
+        }
+        while (number % 3 == 0) {
+            number /= 3;
+        }
+        while (number % 5 == 0) {
+            number /= 5;
+        }
+        return (number == 1) ? true : false
+    }
+}
+```
+该方案导致解决方法的时间复杂度过大
+
+Way2. 创建数组保存已经找到的数组
+丑数由另一个丑数乘以2，3，5得到的结果
+
+```js
+function GetUglyNumber_Solution(index)
+{
+    // write code here
+    if (index <= 0) {
+        return 0
+    }
+    var uglyNum = [1];
+    var [M2, M3, M5] = [0, 0, 0];
+    for (let i = 1; i < index; i ++) {
+        uglyNum[i] = Math.min(uglyNum[M2] * 2, uglyNum[M3] * 3, uglyNum[M5] * 5);
+        if (uglyNum[i] === uglyNum[M2] * 2) M2 ++;
+        if (uglyNum[i] === uglyNum[M3] * 3) M3 ++;
+        if (uglyNum[i] === uglyNum[M5] * 5) M5 ++;
+    }
+    // console.log(uglyNum)
+    return uglyNum[index - 1]
+}
+```
+
+#### 51. 第一个只出现一次的字符
+
+题目：在一个字符串（0 <= 字符串长度 <= 10000, 全部由字母组成）中找到第一个只出现一次的字符，并返回它的位置，如没有则返回-1（需要区分大小写）
+
+解决方案：构建hash表，首先遍历一次字符串，将重复出现的放入。然后再在hashMap中查找
+
+```js
+function FirstNotRepeatingChar(str)
+{
+    // 构建hash表
+    if (str.length == 0) {
+        return -1
+    }
+    var hashMap = {};
+    for (let i = 0; i < str.length; i ++) {
+        if (hashMap[str[i]] == null) {
+            hashMap[str[i]] = i;
+        }else {
+            hashMap[str[i]] -= i;
+        }
+    }   
+    for (let j = 0; j < str.length; j ++) {
+        if (hashMap[str[j]] >= 0) {
+            return hashMap[str[j]]
+        }
+    } 
+}
+```
+
+#### 52*. 数组中的逆序对
+
+题目：在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组,求出这个数组中的逆序对的总数P。并将P对1000000007取模的结果输出。 即输出P%1000000007
+
+解决方案：为了减小时间复杂度，先将数组分割为子数组，统计出子数组内部的逆序对的数目，然后统计两个相邻的子数组之间的逆序对的数目。该方法排序的原理就是归并排序，时间复杂度为O(nlogn)
+
+```js
+function InversePairs(data)
+{
+    let len = data.length;
+    if (len === 0) {
+        return 0;
+    }
+    let copy = data.slice();
+    let res = InversePairsCore(data, copy, 0, len-1);
+    delete copy;
+    return res%1000000007;
+}
+function InversePairsCore(data, copy, start, end) {
+    if (start === end) {
+        return 0;
+    }
+
+    let length = (end - start) >> 1;
+    let left = arguments.callee(copy, data, start, start+length);
+    let right = arguments.callee(copy, data, start+length+1, end);
+
+    let i = start + length;
+    let j = end;
+    let indexCopy = end;
+    let cnt = 0;
+  
+    while (i >= start && j >= start+length+1) {
+        if (data[i] > data[j]) {
+            copy[indexCopy--] = data[i--];
+            cnt += j - start - length;
+        } else {
+            copy[indexCopy--] = data[j--];
+        }
+    }
+    for (; i >= start; i --) {
+        copy[indexCopy--] = data[i];
+    }
+    for (; j >= start + length + 1; j --) {
+        copy[indexCopy--] = data[j];
+    }
+    return left + right + cnt;
+}
+```
+
+#### 53. 两个链表的第一个公共节点
+
+题目：输入两个链表，找出它们的第一个公共结点。
+
+解决方案：
+Way1. 采用两层遍历循环的方式来找到公共的结点
+
+```js
+/*function ListNode(x){
+    this.val = x;
+    this.next = null;
+}*/
+function FindFirstCommonNode(pHead1, pHead2)
+{
+    // write code here
+    if(!pHead1 || !pHead2) {
+        return null
+    }
+    var start2 = pHead2;
+    while (pHead1) {
+        pHead2 = start2;
+        while (pHead2) {
+            if (pHead1 == pHead2) {
+                return pHead1;
+            } else {
+                pHead2 = pHead2.next;
+            }
+        }
+        pHead1 = pHead1.next;
+    }
+    return null
+}
+```
+
+Way2. 计算两个链表的长度，计算两个链表的差值diffLen，然后让长的链表先进行移动diffLen，然后同步进行移动查找即可
+
+```js
+/*function ListNode(x){
+    this.val = x;
+    this.next = null;
+}*/
+function FindFirstCommonNode(pHead1, pHead2)
+{
+    let listLen1 = caculateLength(pHead1);
+    let listLen2 = caculateLength(pHead2);
+    let diffLen = listLen1 - listLen2;
+    // 长链表
+    let curr1 = pHead1;
+    let curr2 = pHead2;
+    if (listLen2 > listLen1) {
+        diffLen = listLen2 - listLen1;
+        curr1 = pHead2;
+        curr2 = pHead1;
+    }
+    // 让长的链表先进行移动
+    for (let i = 0; i < diffLen; i ++) {
+        curr1 = curr1.next;
+    }
+    // 让两个链表共同移动
+    while (curr1 && curr2 && curr1 != curr2) {
+        curr1 = curr1.next;
+        curr2 = curr2.next;
+    }
+    return curr1
+    
+    // 计算链表的长度
+    function caculateLength(pHead) {
+        let count = 0;
+        while (pHead) {
+            count ++;
+            pHead = pHead.next;
+        }
+        return count;
+    }
+}
+```
+
+#### 54. 数字在排序数组中出现的次数
+
+题目：统计一个数字在排序数组中出现的次数。
+
+解决方案：Way1. 对于数组是排序的话，首先可以通过二分法对该数字进行定位，然后找到该数字后，再从左和从右统计出现的次数
+
+```js
+function GetNumberOfK(data, k)
+{
+    // write code here
+   var result = 0;
+    findMiddle(data, k);
+
+    // 找该数字两边共多少个
+    if (result != null) {
+        let left = right = result;
+        count = 1;
+        for (let i = left - 1; i >= 0; i --) {
+            if (data[i] != data[result]) {
+                break
+            }
+            count ++;
+        }
+        for (let j = right + 1; j < data.length; j ++) {
+            if (data[j] != data[result]) {
+                break
+            }
+            count ++;
+        }
+        return count;
+    } else {
+        return 0;
+    }
+    
+
+    // 采用二分法对数组中的数字进行定位，找到该数字的index
+    function findMiddle(arr, k) {
+        if (arr.length == 0) {
+            result = null
+        }
+        let midIndex = Math.floor(arr.length / 2);        
+        if (arr[midIndex] > k) {
+            findMiddle(arr.slice(0, midIndex), k);
+        }else if (arr[midIndex] < k) {
+            result += midIndex + 1;
+            findMiddle(arr.slice(midIndex + 1), k);
+        }else if (arr[midIndex] == k){
+            result += midIndex;
+            return ;
+        }
+    }
+}
+```
+
+Way2. 使用JS的reduce方法，代码简洁，但是时间、空间复杂度比Way1高
+```js
+function GetNumberOfK(data, k)
+{
+    // write code here
+   return data.reduce(function(count, a) {
+        return a === k ? count + 1 : count
+    }, 0) 
+}
+```
+
+#### 55. 二叉搜索树的第k个结点
+
+题目：给定一棵二叉搜索树，请找出其中的第k小的结点。例如， （5，3，7，2，4，6，8）    中，按结点数值大小顺序第三小结点的值为4。
+
+解决方案：因为是二叉搜索树，其性质是左子结点<右子结点，无论是选择第k大的结点或者是第k小的结点，只需要做出二叉搜索树的中序遍历的结果即可。
+
+```js
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function KthNode(pRoot, k)
+{
+    if (!pRoot || k <= 0) {
+        return null
+    }
+    var listTree = [];
+    var result;
+    middleTree(pRoot);
+    return result
+
+    function middleTree(root) {
+        if (root.left !== null) {
+            middleTree(root.left);
+            root.left = null;
+        }
+        if (root.left === null && root.right === null) {
+            listTree.push(root.val);
+            if (listTree.length == (k)) {
+                result = root;
+                return ;
+            }
+        }
+        if (root.left === null && root.right !== null) {
+            listTree.push(root.val);
+            if (listTree.length == (k)) {
+                result = root;
+                return ;
+            }
+            middleTree(root.right);
+            root.right = null;
+        }
+    }
+}
+```
+
+```js
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function KthNode(pRoot, k)
+{
+    if(!pRoot || !k){
+        return null;
+    }
+    return KthCore(pRoot);
+    function KthCore(node){
+        var target = null;
+        if(node.left){
+            target = KthCore(node.left);
+        }
+        if(!target){
+            if(k === 1)
+                target = node.val;
+            k--;
+        }
+        if(!target && node.right)
+            target = KthCore(node.right);
+        return target;
+    }
+}
+```
+
+#### 56. 二叉树的深度
+
+题目：输入一棵二叉树，求该树的深度。从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
+
+解决方案：通过递归的方法来实现，如果左子树的深度大于右子树的深度，则左子树的深度加1即为整个树的最大深度。通过这种递归的计算方式来实现。
+
+```js
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function TreeDepth(pRoot)
+{
+    // write code here
+    if (!pRoot) {
+        return 0;
+    }
+    // 通过剪枝的方式来实现
+    var maxDepth = 0;
+    var count = 1;
+    caculateDep(pRoot);
+    return maxDepth;
+    function caculateDep(root) {
+        if (root.left) {
+            count ++;
+            caculateDep(root.left);
+            root.left = null;
+        }
+        if (!root.left && root.right) {
+            count ++;
+            caculateDep(root.right);
+            root.right = null;
+        }
+        if (!root.left && !root.right) {
+            maxDepth = (count > maxDepth ? count : maxDepth);
+            // 剪枝
+            count --;
+            root = null;
+        }
+    }
+}
+```
+
+采用dfs
+```js
+function TreeDepth(pRoot){
+    if(!pRoot){
+        return 0;
+    }
+    var depth = 0;
+    var currDepth = 0;
+    dfs(pRoot);
+    return depth;
+    function dfs(node){
+        if(!node){
+            depth = depth > currDepth ? depth : currDepth;
+            return;
+        }
+        currDepth++;
+        dfs(node.left);
+        dfs(node.right);
+        currDepth--;
+    }
+}
+```
+
+#### 57. 平衡二叉树
+
+题目：输入一棵二叉树，判断该二叉树是否是平衡二叉树。某二叉树的任一结点的左右子树深度相差不超过1，则其为平衡二叉树。
+
+解决方案：
+
+Way1. 采用多次遍历的方式实现，但是该方法的时间复杂度较高
+```js
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function IsBalanced_Solution(pRoot)
+{
+    // write code here
+    if (!pRoot) {
+        return true
+    }
+    var left = TreeDepth(pRoot.left);
+    var right = TreeDepth(pRoot.right);
+    if ((left - right) > 1 || (left - right) < -1) {
+        return false
+    }
+    return IsBalanced_Solution(pRoot.left) && IsBalanced_Solution(pRoot.right)
+
+    function TreeDepth(pRoot) {
+        // write code here
+        if (!pRoot) {
+            return 0;
+        }
+        // 通过剪枝的方式来实现
+        var maxDepth = 0;
+        var count = 1;
+        caculateDep(pRoot);
+        return maxDepth;
+        function caculateDep(root) {
+            if (root.left) {
+                count ++;
+                caculateDep(root.left);
+                root.left = null;
+            }
+            if (!root.left && root.right) {
+                count ++;
+                caculateDep(root.right);
+                root.right = null;
+            }
+            if (!root.left && !root.right) {
+                maxDepth = (count > maxDepth ? count : maxDepth);
+                // 剪枝
+                count --;
+                root = null;
+            }
+        }
+    }
+}
+```
+
+Way2. 采用后序遍历的方式实现，在遍历某个左右子节点后，根据左右子结点的深度来判断这个树是不是平衡的，同时得到这个结点的深度。最后来确定这个树是不是平衡的。
+
+```js
+
+```
+
+#### 58*. 数组中只出现一次的数字
+
+题目：一个整型数组里除了两个数字之外，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
+
+解决方案：Way1. 借助hashMap，首先遍历一次数组，将数据映射到hashMap中去，然后将hashMap的键-值提取出来，进行一次遍历，得到符合结果的值
+
+```js
+function FindNumsAppearOnce(array)
+{
+    // write code here
+    // return list, 比如[a,b]，其中ab是出现一次的两个数字
+    var hashMap = {};
+    for(let i = 0; i < array.length; i ++) {
+        if (!hashMap[array[i]]) {
+            hashMap[array[i]] = 1;
+        }else {
+            hashMap[array[i]] += 1;
+        }
+    }
+    var keys = Object.keys(hashMap);
+    var values = Object.values(hashMap);
+    var results = [];
+    for (let i = 0; i < values.length; i ++) {
+        if (values[i] === 1) {
+            results.push(parseInt(keys[i]))
+        }
+    }
+    return results
+}
+```
+但是该方法会占用辅助空间，空间复杂度较大
+16ms， 5460K
+
+Way2. 采用正则语句来实现，时间、空间复杂度均较高
+
+```js
+function FindNumsAppearOnce(array){
+    if (!array || array.length < 2)
+        return [];
+    return array.sort().join(',').replace(/(\d+),\1/g,"").replace(/,+/g,',').replace(/^,|,$/, '').split(',').map(Number);
+}
+```
+
+Way3. (最优)采用异或的机制来实现查找
+1. 将数组中所有数字进行异或得到结果resXOR，resXOR等于只出现一次的两个数字的异或，原因：相同数字的异或为0，0与任何数的异或都等于那个数
+
+2. 将resXOR用二进制表示，从低位到高位，找到第一次出现1的位置
+
+3. 根据这个位置的值（0或者1），将原数组分为两类，这两个只出现一次的数字分别在其中一类中
+
+4. 将两类中的数字分别做异或，即可得到这两个数字
+
+```js
+function FindNumsAppearOnce(array)
+{
+        // 首先将数组中所有的数求异或
+    let xorRes = array.reduce((prev, cur) => prev ^ cur);
+    let binaryRes = xorRes.toString(2);
+    let firstOneIndex = -1;
+    for (let i = binaryRes.length - 1; i >= 0; i --) {
+        if (binaryRes[i] == 1) {
+            firstOneIndex = binaryRes.length - i ;
+            break;
+        }
+    }
+    // 然后将原数组分为两个，并计算得到两个数值
+    let res1, res2;
+    for (let i = 0; i < array.length; i ++) {
+        curBinary = array[i].toString(2);
+        if (curBinary[curBinary.length - firstOneIndex] === '0') {
+            // console.log("niubi")
+            res1 = res1 ? (res1 ^ array[i]) : array[i];
+        }else {
+            res2 = res2 ? (res2 ^ array[i]) : array[i];
+        }
+    }
+    return [res1, res2]
+}
+```
+
+#### 59. 和为S的连续正整数序列
+
+题目：小明很喜欢数学,有一天他在做数学作业时,要求计算出9~16的和,他马上就写出了正确答案是100。但是他并不满足于此,他在想究竟有多少种连续的正数序列的和为100(至少包括两个数)。没多久,他就得到另一组连续正数和为100的序列:18,19,20,21,22。现在把问题交给你,你能不能也很快的找出所有和为S的连续正数序列？输出所有和为S的连续正数序列。序列内按照从小至大的顺序，序列间按照开始数字从小到大的顺序
+
+解决方案：设置两个指针，初始化一个为1，一个为2，然后根据叠加的和与sum值来进行判断，最终得到结果。
+
+```js
+function FindContinuousSequence(sum)
+{
+    // write code here
+    let result = [];
+    if (sum <= 1) {
+        return result
+    }
+    let [firstPtr, lastPtr] = [1, 2];
+    pieceSequence(firstPtr, lastPtr);
+    return result
+    
+    function pieceSequence(ptr1, ptr2) {
+        if (ptr2 === sum) {
+            return;
+        }
+        let curSum = 0;
+        for (let i = ptr1; i <= ptr2; i ++) {
+            curSum += i;
+        }
+        // curSum大于sum，first向右移动指针
+        if (curSum > sum) {
+            pieceSequence(++ptr1, ptr2);
+        }
+        if (curSum < sum) {
+            pieceSequence(ptr1, ++ptr2);
+        }
+        if (curSum === sum) {
+            let curResult = [];
+            for (let i = ptr1; i <= ptr2; i ++) {
+                curResult.push(i)
+            }
+            result.push(curResult)
+            pieceSequence(++ptr1, ptr2);
+        }
+    }
+}
+```
+
+#### 60. 和为S的两个数字
+
+题目：输入一个递增排序的数组和一个数字S，在数组中查找两个数，使得他们的和正好是S，如果有多对数字的和等于S，输出两个数的乘积最小的。
+
+```js
+function FindNumbersWithSum(array, sum)
+{
+    // write code here
+    if (array.length < 2) {
+        return []
+    }
+    let [curr1, curr2] = [0, 1];
+    for (let i = curr1; i < array.length; i ++) {
+        for (let j = curr2; j < array.length; j ++) {
+            if (array[i] + array[j] === sum) {
+                return [array[i], array[j]]
+            }
+        }
+    }
+    return []
+}
+```
+
+#### 61. 翻转单词顺序列
+
+题目：牛客最近来了一个新员工Fish，每天早晨总是会拿着一本英文杂志，写些句子在本子上。同事Cat对Fish写的内容颇感兴趣，有一天他向Fish借来翻看，但却读不懂它的意思。例如，“student. a am I”。后来才意识到，这家伙原来把句子单词的顺序翻转了，正确的句子应该是“I am a student.”。Cat对一一的翻转这些单词顺序可不在行，你能帮助他么？
+
+解决方案：在JS中采用正则的方式提取，然后使用reverse方法翻转数组，之后合并为字符串即可
+
+```js
+function ReverseSentence(str)
+{
+    return str.split(" ").reverse().join(" ")
+}
+```
+
+#### 62. 左旋转字符串
+
+题目：汇编语言中有一种移位指令叫做循环左移（ROL），现在有个简单的任务，就是用字符串模拟这个指令的运算结果。对于一个给定的字符序列S，请你把其循环左移K位后的序列输出。例如，字符序列S=”abcXYZdef”,要求输出循环左移3位后的结果，即“XYZdefabc”。是不是很简单？OK，搞定它！
+
+解决方案：题目的关键在于循环左移，因此需要进行一次求余的计算
+
+```js
+function LeftRotateString(str, n)
+{
+    // write code here
+    if(!str){
+        return "";
+    }
+    var len = str.length;
+    n = n % len;
+    var left = str.slice(0, n);
+    var right = str.slice(n);
+    return right + left;
+}
+```
+
+#### 63. 滑动窗口的最大值
+
+题目：给定一个数组和滑动窗口的大小，找出所有滑动窗口里数值的最大值。例如，如果输入数组{2,3,4,2,6,2,5,1}及滑动窗口的大小3，那么一共存在6个滑动窗口，他们的最大值分别为{4,4,6,6,6,5}； 针对数组{2,3,4,2,6,2,5,1}的滑动窗口有以下6个： {[2,3,4],2,6,2,5,1}， {2,[3,4,2],6,2,5,1}， {2,3,[4,2,6],2,5,1}， {2,3,4,[2,6,2],5,1}， {2,3,4,2,[6,2,5],1}， {2,3,4,2,6,[2,5,1]}。
+
+解决方案：设置一个两端开口的队列，最大值永远在第一位，并对进来的数字进行判断。如果进来的数字大于最大的数字，则进行替换；如果进来的数字小于队列的数字，则进行保存。同时需要注意窗口长度。
+
+```js
+function maxInWindows(num, size)
+{
+    var len = num.length
+    if (size > len || size === 0) {
+        return []
+    }
+    var [results, curSeq] = [[], [0]];
+    for (let i = 0; i < len; i ++) {
+        let flag = 0;
+        for (let j = 0; j < curSeq.length; j ++) {
+            if (num[i] >= num[curSeq[j]]) {
+                curSeq.splice(j, curSeq.length - j, i);
+                flag = 1;
+                break
+            }
+        }
+        if (flag === 0) {
+            curSeq.push(i)
+        }
+        // 删除超过窗口宽度的数字
+        if (curSeq[curSeq.length - 1] - curSeq[0] >= size) {
+            curSeq.shift();
+        }
+        if (i + 1 >= size) {
+            results.push(num[curSeq[0]])
+        }
+    }
+    return results
+}
+```
+
+#### 64. 扑克牌中的顺子
+
+题目： LL今天心情特别好,因为他去买了一副扑克牌,发现里面居然有2个大王,2个小王(一副牌原本是54张^_^)...他随机从中抽出了5张牌,想测测自己的手气,看看能不能抽到顺子,如果抽到的话,他决定去买体育彩票,嘿嘿！！“红心A,黑桃3,小王,大王,方片5”,“Oh My God!”不是顺子.....LL不高兴了,他想了想,决定大\小 王可以看成任何数字,并且A看作1,J为11,Q为12,K为13。上面的5张牌就可以变成“1,2,3,4,5”(大小王分别看作2和4),“So Lucky!”。LL决定去买体育彩票啦。 现在,要求你使用这幅牌模拟上面的过程,然后告诉我们LL的运气如何， 如果牌能组成顺子就输出true，否则就输出false。为了方便起见,你可以认为大小王是0。
+
+解决方案：1. 首先将数组进行排序
+2. 统计数组中0的个数
+3. 统计排序后的数组中，相邻的数字之间的空缺数
+4. 如果数组中出现重复数字的情况，则认定为不能组成顺子
+
+```js
+function IsContinuous(numbers)
+{
+    // 错误输入的情况
+    var len = numbers.length;
+    if (len < 1 || !numbers) {
+        return false 
+    }
+    // Step1. 排序数组
+    sortedArr = numbers.sort();
+    // Step2. 统计0的个数
+    // Step3. 判断有没有重复的数字
+    var zeroNum = 0;
+    var diffNum = 0;
+    for (let i = 0; i < len; i ++) {
+        if (sortedArr[i] === 0) {
+            zeroNum ++;
+        }
+        if (sortedArr[i + 1] && sortedArr[i] === sortedArr[i + 1] && sortedArr[i] !== 0) {
+            return false
+        }
+        if (sortedArr[i + 1] && sortedArr[i + 1] - sortedArr[i] !== 1 && sortedArr[i] !== 0) {
+            diffNum += (sortedArr[i + 1] - sortedArr[i] - 1);
+        }
+    }
+    return zeroNum >= diffNum ? true : false 
+}
+```
+
+#### 65. 圆圈中最后剩下的数字
+
+题目：每年六一儿童节,牛客都会准备一些小礼物去看望孤儿院的小朋友,今年亦是如此。HF作为牛客的资深元老,自然也准备了一些小游戏。其中,有个游戏是这样的:首先,让小朋友们围成一个大圈。然后,他随机指定一个数m,让编号为0的小朋友开始报数。每次喊到m-1的那个小朋友要出列唱首歌,然后可以在礼品箱中任意的挑选礼物,并且不再回到圈中,从他的下一个小朋友开始,继续0...m-1报数....这样下去....直到剩下最后一个小朋友,可以不用表演,并且拿到牛客名贵的“名侦探柯南”典藏版(名额有限哦!!^_^)。请你试着想下,哪个小朋友会得到这份礼品呢？(注：小朋友的编号是从0到n-1)
+
+解决方案：映射的方程为p(x)=(x-k-1)%n，然后得到递归的公式
+
+```
+f(n, m) = (f(n-1, m) + m) % n
+```
+
+```js
+function LastRemaining_Solution(n, m)
+{
+    // write code here
+    if (n < 1 || m < 1) {
+        return -1
+    }
+    var last = 0;
+    for (let i = 2; i <= n; i ++) {
+        last = (last + m) % i
+    }
+    return last
+}
+```
+
+#### 66. 股票的最大利润
+
+题目：股票的价格按照时间先后存储在数组，卖该股票一次最大的利润是多少？
+
+解决方案：卖出价固定时，买入价越低则利润越大。需要记住之前i-1个数字的最小值，就可以计算最大利润。
+
+```js
+function maxProfit(array) {
+    if (!array || array.length === 0) {
+        return 0
+    }
+    let lowest = array[0];
+    let maxProfit = 0;
+    for (let i = 0; i < array.length; i ++){
+        lowest = array[i] < lowest ? array[i] : lowest;
+        if (array[i] - lowest > maxProfit) {
+            maxProfit = array[i] - lowest;
+        }
+    }
+    return maxProfit
+}
+```
+
+#### 67. 求1+2+...+n
+
+题目：求1+2+3+...+n，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）
+
+解决方案：
+
+```js
+function Sum_Solution(n){
+    var sum = 0;
+    plus(n);
+    return sum;
+     
+    function plus(num){
+        sum += num;
+        num > 0 && plus(--num);
+    }
+}
+```
+
+#### 68. 不用加减乘除做加法
+
+题目：
+写一个函数，求两个整数之和，要求在函数体内不得使用+、-、*、/四则运算符号。
+
+解决方案：加法的步骤可以理解为以下几个步骤：
+
+1. 只做各位相加不进位（异或）
+
+2. 做进位，如果有进位则进行进位（两个数先做位与运算，然后左移一位）
+
+3. 将前两个步骤的结果相加（也就是重复前面两个步骤，直到不产生进位）
+
+```js
+function Add(num1, num2)
+{
+    // write code here
+    return addCore(num1, num2)
+
+    function addCore(bool1, bool2) {
+        // Step1: 进行不进位的加法运算，也就是异或运算
+        xorRes = bool1 ^ bool2;
+        // Step2: 产生进位，俩个数进行与运算，然后进行移位
+        andRes = bool1 & bool2;
+        if (andRes !== 0) {
+            andRes = andRes << 1
+            addCore(xorRes, andRes)
+        }
+        return xorRes
+    }
+}
+```
+
+#### 69. 构建乘积数组
+
+题目：给定一个数组A[0,1,...,n-1],请构建一个数组B[0,1,...,n-1],其中B中的元素B[i]=A[0]\*A[1]\*...\*A[i-1]\*A[i+1]\*...\*A[n-1]。不能使用除法。
+
+解决方案：B[i]=A[0]\*A[1]\*...\*A[i-1]\*A[i+1]\*...\*A[n-1]可以看作两个部分C[i]=A[0]\*A[1]\*...\*A[i-1]和D[i]=A[i+1]\*...\*A[n-1]两个部分。可以通过自上而下和自下而上两个顺序计算得到。
+
+```js
+function multiply(array)
+{
+    // write code here
+    var len = array.length;
+    var bArr = [];
+    var cArr = [1];
+    var dArr = [1];
+    for (let i = 1; i < len; i ++) {
+        cArr.push(cArr[i - 1] * array[i - 1]);
+        dArr.push(dArr[i - 1] * array[array.length - i])
+    }
+    for (let i = 0; i < len; i ++) {
+        bArr.push(cArr[i] * dArr[len-i-1])
+    }
+    return bArr
+}
+```
+
+#### 70. 把字符串转换成整数
+
+题目：将一个字符串转换成一个整数(实现Integer.valueOf(string)的功能，但是string不符合数字要求时返回0)，要求不能使用字符串转换整数的库函数。 数值为0或者字符串不是一个合法的数值则返回0。
+
+解决方案：判断多种违规输入的情况，也需要考虑正负的情况。
+
+```js
+function StrToInt(str)
+{
+    var len = str.length;
+    if (len <= 0) {
+        return 0
+    }
+    let numbers = 0;
+    let sign = str[0] === '-' ? -1 : 1;
+    for (let i = (str[0] === '+' || str[0] === '-') ? 1 : 0; i < len; i ++) {
+        if (str[i] < '0' || str[i] > '9') {
+            return 0
+        }
+        numbers = numbers * 10 + parseInt(str[i])
+    }
+    return numbers * sign
+}
+```
+
+#### 71*. 字符流中第一个不重复的字符
+
+题目：请实现一个函数用来找出字符流中第一个只出现一次的字符。例如，当从字符流中只读出前两个字符"go"时，第一个只出现一次的字符是"g"。当从该字符流中读出前六个字符“google"时，第一个只出现一次的字符是"l"。
+
+```js
+function Init(){
+    streamNums = [];   //定义一个全局变量, 不用var
+    streamNumsLen = 256;   //定义一个全局变量, 不用var
+    streamNumsIndex = 0;   //定义一个全局变量, 不用var
+    for(var i = 0; i < streamNumsLen; i++){
+        streamNums[i] = -1;
+    }
+}
+function Insert(ch){
+    var code = ch.charCodeAt();
+    if(streamNums[code] == -1){
+        streamNums[code] = streamNumsIndex;
+    } else if(streamNums[code] >= 0){
+        streamNums[code] = -2;
+    }
+    streamNumsIndex++;
+}
+function FirstAppearingOnce(){
+    result = '';
+    var ch = '';
+    var minIndex = Infinity;
+    for(var i = 0; i < streamNumsLen; i++){
+        if(streamNums[i] >= 0 && streamNums[i] < minIndex){
+            ch = String.fromCharCode(i);
+            minIndex = streamNums[i];
+        }
+    }
+    return ch == "" ? '#' : ch;
+}
+```
+
+#### 72*. 按之字形顺序打印二叉树
+
+题目：请实现一个函数按照之字形打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右至左的顺序打印，第三行按照从左到右的顺序打印，其他行以此类推。
+
+```js
+function zPrint(pRoot) {
+   // write code here
+    let res = [];
+    if (!pRoot) {
+        return res
+    }
+    let count = 1;
+    let queue = [pRoot];
+    zPrintCore(queue, count);
+    return res
+    function zPrintCore(queCen, count) {
+        let resCen = [];
+        let len = queCen.length;
+        let flag = 0;
+        for (let i = 0; i < len; i ++) {
+            flag += Boolean(queCen[i])
+        }
+        if (flag) {
+            if (count % 2 === 1) {
+                // 奇数层顺序打印
+                for (let i = 0; i < len; i ++) {
+                    if (queCen[i]){
+                        resCen.push(queCen[i].val);
+                    }
+                }
+                // 更新queCen
+                for (let i = len - 1; i >= 0; i --) {
+                    if (queCen[i].right){
+                        queCen.push(queCen[i].right)
+                    }
+                    if (queCen[i].left) {
+                        queCen.push(queCen[i].left)
+                    }
+                }
+                queCen.splice(0, len)
+                res.push(resCen);
+                count ++;
+                zPrintCore(queCen, count);
+            }else {
+                // 偶数层逆序打印
+                for (let i = 0; i < len; i ++) {
+                    if (queCen[i]){
+                        resCen.push(queCen[i].val);
+                    }
+                }
+                // 更新queCen
+                for (let i = len - 1; i >= 0; i --) {
+                    if (queCen[i].left){
+                        queCen.push(queCen[i].left)
+                    }
+                    if (queCen[i].right) {
+                        queCen.push(queCen[i].right)
+                    }
+                }
+                queCen.splice(0, len);
+                res.push(resCen);
+                count ++;
+                zPrintCore(queCen, count);
+            }
+        }else {
+            return;
+        }
+    } 
+}
+```
+
+#### 73. 把二叉树打印成多行
+
+题目：从上到下按层打印二叉树，同一层结点从左至右输出。每一层输出一行。
+
+```js
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function Print(pRoot)
+{
+    var res = [];
+    if(!pRoot){
+        return res;
+    }
+    var que = [];
+    que.push(pRoot);
+    while(que.length > 0){
+        var vec = [];
+        var len = que.length;
+        for(var i = 0; i < len; i++){
+            var tmp = que.shift(); //front
+            vec.push(tmp.val);
+            if(tmp.left)
+                que.push(tmp.left);
+            if(tmp.right)
+                que.push(tmp.right);
+        }
+        res.push(vec);
+    }
+    return res;
+}
+```
